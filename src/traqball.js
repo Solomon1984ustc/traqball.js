@@ -197,11 +197,13 @@
             if(THIS.config.perspectiveOrigin){
                 stage.style[cssPref+"PerspectiveOrigin"] = THIS.config.perspectiveOrigin;
             }
-            
+
             THIS.box.style[cssPref+"Transform"] = "matrix3d("+ startMatrix+")";
             bindEvent(THIS.box, 'touchstart', startrotation);
             
             THIS.evHandlers = [startrotation, rotate, finishrotation];
+
+            eulerAngles(startMatrix);
         })();
             
         

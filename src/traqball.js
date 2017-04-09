@@ -110,6 +110,11 @@
             mouseMoveVect   = [],   // Vector during mousemove
             startMatrix     = [],   // Transformation-matrix at the moment of *starting* dragging
             delta           = 0,
+            euler           = {
+              roll  : 0,
+              pitch : 0,
+              yaw   : 0
+            },
             impulse, pos, w, h, decr, angle, oldAngle, oldTime, curTime;
                 
         (function init (){
@@ -118,7 +123,7 @@
             for(var prop in conf){
                 THIS.config[prop] = conf[prop];
                 }
-                
+
             stage   = document.getElementById(THIS.config.stage) || document.getElementsByTagname("body")[0];
             pos     = findPos(stage);
             angle   = THIS.config.angle || 0;
@@ -160,7 +165,7 @@
             }else if(bTransform !== "none"){
                 //already css3d transforms on element?              
                 startMatrix = bTransform.split(",");
-                
+
                 //Under certain circumstances some browsers report 2d Transforms.
                 //Translate them to 3d:
                 if(/matrix3d/gi.test(startMatrix[0])){
@@ -182,7 +187,7 @@
                 angle       = 0;
                 startMatrix = calcMatrix(axis, angle);
             }
-        
+
             if(THIS.config.perspective){
                 stage.style[cssPref+"Perspective"] = THIS.config.perspective;
             }else if(perspective === "none"){
@@ -236,6 +241,8 @@
             // Matrices can be combined by multiplication, so what are we waiting for?
             stopMatrix  = calcMatrix(axis, angle);
             startMatrix = multiplyMatrix(startMatrix,stopMatrix);
+
+            eulerAngles(startMatrix);
         }
     
         // The rotation:
@@ -264,10 +271,32 @@
             //Only one thing left to do: Update the position of the box by applying a new transform:
             // 2 transforms will be applied: the current rotation 3d and the start-matrix
             THIS.box.style[cssPref+"Transform"] = "rotate3d("+ axis+","+angle+"rad) matrix3d("+startMatrix+")";
-                                        
+
+            // temporary stopMatrix
+            var _stopMatrix = calcMatrix(axis, angle);
+            eulerAngles( multiplyMatrix(startMatrix, _stopMatrix) );
+
             curTime = new Date().getTime();
         }
     
+        function eulerAngles(R) {
+          // r0: r0,0 r1: r0,1 r2: r0,2 r3: r0,3
+          // r4: r1,0 r5: r1,1 r6: r1,2 r7: r1,3
+          // r8: r2,0 r9: r2,1 r10: r2,2 r11: r2,3
+
+          var sy = Math.sqrt(R[0] * R[0] +  R[4] * R[4]);
+
+          euler.roll  = radToDeg(Math.atan2(R[9], R[10]));
+          euler.pitch = radToDeg(Math.atan2(-R[8], sy));
+          euler.yaw   = radToDeg(Math.atan2(R[4], R[0]));
+
+          THIS.config['rotationCallback'](euler);
+        }
+
+        function radToDeg(r) {
+          return r * 180 / Math.PI;
+        }
+
         function calcSpeed(){
             var dw  = angle - oldAngle;
                 dt  = curTime-oldTime;

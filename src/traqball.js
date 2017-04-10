@@ -286,6 +286,9 @@
           // r4: r1,0 r5: r1,1 r6: r1,2 r7: r1,3
           // r8: r2,0 r9: r2,1 r10: r2,2 r11: r2,3
 
+          // these formulas taken from
+          // https://www.learnopencv.com/rotation-matrix-to-euler-angles/
+
           var sy = Math.sqrt(R[0] * R[0] +  R[4] * R[4]);
 
           euler.roll  = radToDeg(Math.atan2(R[9], R[10]));
@@ -318,6 +321,10 @@
             delta = delta > 0 ? delta-decr : 0;
             
             THIS.box.style[cssPref+"Transform"] = "rotate3d("+ axis+","+angle+"rad) matrix3d("+startMatrix+")";
+
+            // temporary stopMatrix
+            var _stopMatrix = calcMatrix(axis, angle);
+            eulerAngles( multiplyMatrix(startMatrix, _stopMatrix) );
             
             if (delta === 0){
                 stopSlide();

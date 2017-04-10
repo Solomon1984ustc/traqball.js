@@ -202,8 +202,6 @@
             bindEvent(THIS.box, 'touchstart', startrotation);
             
             THIS.evHandlers = [startrotation, rotate, finishrotation];
-
-            eulerAngles(startMatrix);
         })();
             
         

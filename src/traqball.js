@@ -38,7 +38,7 @@
             remove      = remove || "add";
          
         evType = canTouch ? evType : mouseEvs[touchEvs.indexOf(type)];
-        
+
         target[remove+"EventListener"](evType, callback, false);
     }
     
@@ -239,10 +239,15 @@
             // 1. calculate a matrix from axis and the current angle
             // 2. Create a new startmatrix by combining current startmatrix and stopmatrix to a new matrix. 
             // Matrices can be combined by multiplication, so what are we waiting for?
-            stopMatrix  = calcMatrix(axis, angle);
-            startMatrix = multiplyMatrix(startMatrix,stopMatrix);
 
-            eulerAngles(startMatrix);
+            if (mouseMoveVect.length) {
+              stopMatrix  = calcMatrix(axis, angle);
+              startMatrix = multiplyMatrix(startMatrix,stopMatrix);
+
+              eulerAngles(startMatrix);
+
+              mouseMoveVect = [];
+            }
         }
     
         // The rotation:

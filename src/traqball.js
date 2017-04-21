@@ -37,9 +37,13 @@
             touchEvs    = ["touchstart", "touchend", "touchmove"],
             remove      = remove || "add";
 
-        evType = canTouch ? evType : mouseEvs[touchEvs.indexOf(type)];
+        // add/remove touch event handlers if device supports them
+        if (canTouch) {
+          target[remove+"EventListener"](evType, callback, false);
+        }
 
-        target[remove+"EventListener"](evType, callback, false);
+        // always add/remove mouse event handlers
+        target[remove+"EventListener"](mouseEvs[touchEvs.indexOf(type)], callback, false);
     }
 
     function getCoords(eventObj){

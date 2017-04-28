@@ -201,6 +201,9 @@
             bindEvent(THIS.box, 'touchstart', startrotation);
 
             THIS.evHandlers = [startrotation, rotate, finishrotation];
+
+            // expose stopSlide
+            THIS.stop = hardStop;
         })();
 
 
@@ -336,6 +339,13 @@
                 stopSlide();
             }else{
                 requestAnimFrame(slide);
+            }
+        }
+
+        function hardStop(done) {
+            stopSlide();
+            if (done) {
+              setTimeout(done, 100);
             }
         }
 
